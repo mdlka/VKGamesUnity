@@ -1,0 +1,14 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: Assets/EmptySceneForTestRunner.unity
+    guid: e6219a78532de1a4eb2455d8776d3dcf
+  - enabled: 0
+    path: Packages/com.agava.vkgames/Samples/Playtesting/PlaytestingCanvas.unity
+    guid: 53f66251bf90a4c47b85e7610675ba76
+  m_configObjects: {}
