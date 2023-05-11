@@ -40,7 +40,7 @@ namespace Agava.VKGames
             s_onGetUserDataErrorCallback?.Invoke();
         }
         
-        [MonoPInvokeCallback(typeof(Action))]
+        [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnGetUserDataSuccessCallback(string value)
         {
             s_onGetUserDataSuccessCallback?.Invoke(value);
