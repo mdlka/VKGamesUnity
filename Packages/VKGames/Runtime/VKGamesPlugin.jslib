@@ -117,7 +117,39 @@ const library = {
                     console.log(error);
                 });
         },
+        
+        getUserData: function (key, onSuccessCallback, onErrorCallback) {
+            vkSdk.bridge.send("VKWebAppStorageGet", { "key": key })
+                .then(function (data) {
+                    const result = data.keys[0];
+                    const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
+                    dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                    _free(bridgeDataUnmanagedStringPtr);
+                })
+                .catch(function (error) {
+                    dynCall('v', onErrorCallback);
+                    console.log(error);
+                });
+        },
+        
+        setUserData: function (key, value, onSuccessCallback, onErrorCallback) {
+            vkSdk.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
+                .then(function (data) {
+                    if(data.result)
+                        dynCall('v', onSuccessCallback);
+                })
+                .catch(function (error) {
+                    dynCall('v', onErrorCallback);
+                    console.log(error);
+                });
+        },
 
+        allocateUnmanagedString: function (string) {
+            const stringBufferSize = lengthBytesUTF8(string) + 1;
+            const stringBufferPtr = _malloc(stringBufferSize);
+            stringToUTF8(string, stringBufferPtr, stringBufferSize);
+            return stringBufferPtr;
+        }
     },
 
     // C# calls
@@ -155,6 +187,18 @@ const library = {
         vkSDK.throwIfSdkNotInitialized();
         
         vkSDK.vkWebJoinGroup(onSuccessCallback, onErrorCallback);
+    },
+    
+    GetUserData: function (key, onSuccessCallback, onErrorCallback) {
+        vkSDK.throwIfSdkNotInitialized();
+        
+        vkSDK.getUserData(key, onSuccessCallback, onErrorCallback);
+    },
+    
+    SetUserData: function (key, value, onSuccessCallback, onErrorCallback) {
+        vkSDK.throwIfSdkNotInitialized();
+
+        vkSDK.setUserData(key, value, onSuccessCallback, onErrorCallback);
     },
 
     IsInitialized: function () {

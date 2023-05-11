@@ -1,0 +1,48 @@
+﻿using System.Collections;
+using Agava.VKGames;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+namespace VKGames.Tests
+{
+    public class StorageTests
+    {
+        [UnitySetUp]
+        public IEnumerator WaitForInitialization()
+        {
+            if (!VKGamesSdk.Initialized)
+                yield return VKGamesSdk.Initialize(isTest: true);
+        }
+        
+        [UnityTest]
+        public IEnumerator ShouldNotGetData(string key = "key")
+        {
+            bool callbackInvoked = false;
+
+            Storage.GetUserDataByKey(key, null, onErrorCallback: () =>
+            {
+                callbackInvoked = true;
+            });
+
+            yield return new WaitForSecondsRealtime(1);
+
+            Assert.IsTrue(callbackInvoked);
+        }
+
+        [UnityTest]
+        public IEnumerator ShouldNotSetData(string key = "key", string value = "value")
+        {
+            bool callbackInvoked = false;
+            
+            Storage.SetUserDataByKey(key, value, onErrorCallback: () =>
+            {
+                callbackInvoked = true;
+            });
+            
+            yield return new WaitForSecondsRealtime(1);
+
+            Assert.IsTrue(callbackInvoked);
+        }
+    }
+}

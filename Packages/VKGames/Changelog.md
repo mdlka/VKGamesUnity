@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0] - 11.05.2023
+
+### Fixed
+- Storage.GetUserDataByKey
+- Storage.SetUserDataByKey
+
+
 ## [1.1.1] - 23.10.2022
 
 ### Fixed
