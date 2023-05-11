@@ -119,7 +119,7 @@ const library = {
         },
         
         getUserData: function (key, onSuccessCallback, onErrorCallback) {
-            vkSdk.bridge.send("VKWebAppStorageGet", { "key": key })
+            vkSDK.bridge.send("VKWebAppStorageGet", { "key": key })
                 .then(function (data) {
                     const result = data.keys[0];
                     const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
@@ -133,7 +133,7 @@ const library = {
         },
         
         setUserData: function (key, value, onSuccessCallback, onErrorCallback) {
-            vkSdk.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
+            vkSDK.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
                 .then(function (data) {
                     if(data.result)
                         dynCall('v', onSuccessCallback);
