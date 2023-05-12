@@ -2,7 +2,7 @@
 
 ## [1.2.0] - 11.05.2023
 
-### Fixed
+### Added
 - Storage.GetUserDataByKey
 - Storage.SetUserDataByKey
 

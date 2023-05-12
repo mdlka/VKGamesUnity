@@ -118,18 +118,13 @@ const library = {
                 });
         },
         
-        getUserData: function (keysJsonArray, onSuccessCallback, onErrorCallback) {
-            const jsonArray = JSON.parse(keysJsonArray);
-            console.log(jsonArray);
-            vkSDK.bridge.send("VKWebAppStorageGet", jsonArray)
+        getUserData: function (key, onSuccessCallback, onErrorCallback) {
+            vkSdk.bridge.send("VKWebAppStorageGet", { "key": key })
                 .then(function (data) {
-                    if(data.keys)
-                    {
-                        const result = JSON.stringify(data);
-                        const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
-                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
-                        _free(bridgeDataUnmanagedStringPtr);
-                    }
+                    const result = data.keys[0];
+                    const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
+                    dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                    _free(bridgeDataUnmanagedStringPtr);
                 })
                 .catch(function (error) {
                     dynCall('v', onErrorCallback);
@@ -138,27 +133,10 @@ const library = {
         },
         
         setUserData: function (key, value, onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppStorageSet", { "key": key.toString(), "value": value.toString() })
+            vkSdk.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
                 .then(function (data) {
                     if(data.result)
                         dynCall('v', onSuccessCallback);
-                })
-                .catch(function (error) {
-                    dynCall('v', onErrorCallback);
-                    console.log(error);
-                });
-        },
-
-        getAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
-                .then(function (data) {
-                    if(data.keys)
-                    {
-                        var serialized = JSON.stringify(data);
-                        var bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(serialized);
-                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
-                        _free(bridgeDataUnmanagedStringPtr);
-                    }
                 })
                 .catch(function (error) {
                     dynCall('v', onErrorCallback);
@@ -211,27 +189,16 @@ const library = {
         vkSDK.vkWebJoinGroup(onSuccessCallback, onErrorCallback);
     },
     
-    GetUserData: function (keysJsonArrayPtr, onSuccessCallback, onErrorCallback) {
-        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
-
+    GetUserData: function (key, onSuccessCallback, onErrorCallback) {
         vkSDK.throwIfSdkNotInitialized();
         
-        vkSDK.getUserData(keysJsonArray, onSuccessCallback, onErrorCallback);
+        vkSDK.getUserData(key, onSuccessCallback, onErrorCallback);
     },
     
-    SetUserData: function (keyStringPtr, valueStringPtr, onSuccessCallback, onErrorCallback) {
-        const key = UTF8ToString(keyStringPtr);
-        const value = UTF8ToString(valueStringPtr);
-        
+    SetUserData: function (key, value, onSuccessCallback, onErrorCallback) {
         vkSDK.throwIfSdkNotInitialized();
 
         vkSDK.setUserData(key, value, onSuccessCallback, onErrorCallback);
-    },
-
-    GetAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.getAllDataKeys(amount, offset, onSuccessCallback, onErrorCallback);
     },
 
     IsInitialized: function () {
