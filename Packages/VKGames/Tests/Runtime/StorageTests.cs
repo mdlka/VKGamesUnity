@@ -16,11 +16,11 @@ namespace VKGames.Tests
         }
         
         [UnityTest]
-        public IEnumerator ShouldNotGetData(string key = "key")
+        public IEnumerator ShouldNotGetData(string keys = "key")
         {
             bool callbackInvoked = false;
 
-            Storage.GetUserDataByKey(key, null, onErrorCallback: () =>
+            Storage.GetUserDataByKeys(keys, null, onErrorCallback: () =>
             {
                 callbackInvoked = true;
             });
