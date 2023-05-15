@@ -1,5 +1,4 @@
 using UnityEngine;
-using Agava.VKGames;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -44,6 +43,11 @@ namespace Agava.VKGames.Samples
         public void AddPlayerToCommunity()
         {
             Community.InviteToIJuniorGroup(OnRewardedCallback);
+        }
+
+        public void PurchaseItem(string itemName)
+        {
+            Billing.PurchaseItem(itemName);
         }
 
         private void OnRewardedCallback()
