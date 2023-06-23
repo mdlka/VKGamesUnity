@@ -47,7 +47,11 @@ namespace Agava.VKGames.Samples
 
         public void PurchaseItem(string itemName)
         {
-            Billing.PurchaseItem(itemName);
+            Billing.PurchaseItem(itemName, onPaySuccessCallback: () =>
+            {
+                _coinsAmount += 100;
+                _coinsAmountText.text = $"{_coinsAmount} coins";
+            });
         }
 
         private void OnRewardedCallback()

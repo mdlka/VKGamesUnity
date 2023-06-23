@@ -844,7 +844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b692d426a0ca941798e8d4dc3672d8ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _itemName: testItem1
   _coinsAmountText: {fileID: 11552373}
 --- !u!1 &745081968
 GameObject:
@@ -1104,7 +1103,7 @@ GameObject:
   - component: {fileID: 965944423}
   - component: {fileID: 965944422}
   m_Layer: 5
-  m_Name: InviteToCommunity
+  m_Name: InviteToCommunityButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

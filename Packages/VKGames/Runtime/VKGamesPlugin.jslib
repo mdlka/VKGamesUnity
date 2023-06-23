@@ -125,10 +125,10 @@ const library = {
                 });
         },
         
-        vkWebAppShowOrderBox: function (itemName, onPaySuccessCallback, onErrorCallback) {
+        vkWebAppShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
             vkSDK.bridge.send('VKWebAppShowOrderBox', { 
                     type: 'item', 
-                    item: UTF8ToString(itemName)
+                    item: UTF8ToString(itemId)
                 })
                 .then((data) => {
                     if (data.success) {
@@ -178,10 +178,10 @@ const library = {
         vkSDK.vkWebJoinGroup(onSuccessCallback, onErrorCallback);
     },
 
-    ShowOrderBox: function (itemName, onPaySuccessCallback, onErrorCallback) {
+    ShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
         vkSDK.throwIfSdkNotInitialized();
 
-        vkSDK.vkWebAppShowOrderBox(itemName, onPaySuccessCallback, onErrorCallback);
+        vkSDK.vkWebAppShowOrderBox(itemId, onPaySuccessCallback, onErrorCallback);
     },
 
     IsInitialized: function () {
