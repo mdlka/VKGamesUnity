@@ -5,7 +5,7 @@ namespace Agava.VKGames.Samples.Playtesting
 {
     public class PlaytestingCanvas : MonoBehaviour
     {
-        private IEnumerable Start()
+        private IEnumerator Start()
         {
 #if !UNITY_WEBGL || UNITY_EDITOR
             yield break;
