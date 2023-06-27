@@ -15,21 +15,21 @@ MonoBehaviour:
   _items:
   - ru_title: "\u041F\u0440\u0435\u0434\u043C\u0435\u0442 1"
     en_title: Item 1
-    photo_url: https://raw.githubusercontent.com/mdlka/ExperimentationSDK-VK/main/IAP/ItemsImages/Item1_0.png
+    photo_url: raw.githubusercontent.com/mdlka/TestSDK-VK-IAP/main/Icons/Item1.png
     item_id: item1
     price: 1
     discount: 0
     expiration: 3600
   - ru_title: "\u041F\u0440\u0435\u0434\u043C\u0435\u0442 2"
     en_title: Item 2
-    photo_url: https://raw.githubusercontent.com/mdlka/ExperimentationSDK-VK/main/IAP/ItemsImages/Item1_1.png
+    photo_url: raw.githubusercontent.com/mdlka/TestSDK-VK-IAP/main/Icons/Item2.png
     item_id: item2
     price: 2
     discount: 0
     expiration: 3600
   - ru_title: "\u041F\u0440\u0435\u0434\u043C\u0435\u0442 3"
     en_title: Item 3
-    photo_url: https://raw.githubusercontent.com/mdlka/ExperimentationSDK-VK/main/IAP/ItemsImages/Item1_2.png
+    photo_url: raw.githubusercontent.com/mdlka/TestSDK-VK-IAP/main/Icons/Item3.png
     item_id: item3
     price: 3
     discount: 1
