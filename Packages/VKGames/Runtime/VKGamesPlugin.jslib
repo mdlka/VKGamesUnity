@@ -139,6 +139,61 @@ const library = {
                     console.log(error);
                 });
         },
+
+        getUserData: function (keysJsonArray, onSuccessCallback, onErrorCallback) {
+            const jsonArray = JSON.parse(keysJsonArray);
+            console.log(jsonArray);
+            vkSDK.bridge.send("VKWebAppStorageGet", jsonArray)
+                .then(function (data) {
+                    if(data.keys)
+                    {
+                        const result = JSON.stringify(data);
+                        const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
+                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                        _free(bridgeDataUnmanagedStringPtr);
+                    }
+                })
+                .catch(function (error) {
+                    dynCall('v', onErrorCallback);
+                    console.log(error);
+                });
+        },
+        
+        setUserData: function (key, value, onSuccessCallback, onErrorCallback) {
+            vkSDK.bridge.send("VKWebAppStorageSet", { "key": key.toString(), "value": value.toString() })
+                .then(function (data) {
+                    if(data.result)
+                        dynCall('v', onSuccessCallback);
+                })
+                .catch(function (error) {
+                    dynCall('v', onErrorCallback);
+                    console.log(error);
+                });
+        },
+
+        getAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+            vkSDK.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
+                .then(function (data) {
+                    if(data.keys)
+                    {
+                        var serialized = JSON.stringify(data);
+                        var bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(serialized);
+                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                        _free(bridgeDataUnmanagedStringPtr);
+                    }
+                })
+                .catch(function (error) {
+                    dynCall('v', onErrorCallback);
+                    console.log(error);
+                });
+        },
+
+        allocateUnmanagedString: function (string) {
+            const stringBufferSize = lengthBytesUTF8(string) + 1;
+            const stringBufferPtr = _malloc(stringBufferSize);
+            stringToUTF8(string, stringBufferPtr, stringBufferSize);
+            return stringBufferPtr;
+        }
     },
 
     // C# calls
@@ -176,6 +231,29 @@ const library = {
         vkSDK.throwIfSdkNotInitialized();
         
         vkSDK.vkWebJoinGroup(onSuccessCallback, onErrorCallback);
+    },
+    
+    GetUserData: function (keysJsonArrayPtr, onSuccessCallback, onErrorCallback) {
+        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
+
+        vkSDK.throwIfSdkNotInitialized();
+        
+        vkSDK.getUserData(keysJsonArray, onSuccessCallback, onErrorCallback);
+    },
+    
+    SetUserData: function (keyStringPtr, valueStringPtr, onSuccessCallback, onErrorCallback) {
+        const key = UTF8ToString(keyStringPtr);
+        const value = UTF8ToString(valueStringPtr);
+        
+        vkSDK.throwIfSdkNotInitialized();
+
+        vkSDK.setUserData(key, value, onSuccessCallback, onErrorCallback);
+    },
+
+    GetAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+        vkSDK.throwIfSdkNotInitialized();
+
+        vkSDK.getAllDataKeys(amount, offset, onSuccessCallback, onErrorCallback);
     },
 
     ShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {

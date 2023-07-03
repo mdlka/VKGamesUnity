@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 03.07.2023
+
+### Added
+- `Storage.GetUserDataByKey` and `Storage.SetUserDataByKey` methods.
+
 ## [1.2.0] - 27.06.2023
 
 ### Added
