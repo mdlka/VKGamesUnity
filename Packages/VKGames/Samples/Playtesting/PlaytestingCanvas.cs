@@ -32,12 +32,12 @@ namespace Agava.VKGames.Samples.Playtesting
 
         public void InviteFriendsButtonClick()
         {
-            SocialInteraction.InviteFriends(onRewardedCallback: () => Debug.Log("Friends invited"));
+            SocialInteraction.InviteFriends(onSuccessCallback: () => Debug.Log("Friends invited"));
         }
 
         public void InviteToCommunityButtonClick()
         {
-            Community.InviteToGroup(onRewardedCallback: () => Debug.Log("Added to community"));
+            Community.InviteToGroup(onSuccessCallback: () => Debug.Log("Added to community"));
         }
 
         public void ShowLeaderboardButtonClick()
