@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine.Scripting;
@@ -10,13 +8,13 @@ namespace Agava.VKGames
     public static class Storage
     {
         [DllImport("__Internal")]
-        private static extern void GetUserData(string key, Action<string> onSuccessCallback, Action onErrorCallback);
+        private static extern void StorageGetCloudSaveData(string key, Action<string> onSuccessCallback, Action onErrorCallback);
 
         [DllImport("__Internal")]
-        private static extern void SetUserData(string key, string value, Action onSuccessCallback, Action onErrorCallback);
+        private static extern void StorageSetCloudSaveData(string key, string value, Action onSuccessCallback, Action onErrorCallback);
 
         [DllImport("__Internal")]
-        private static extern void GetAllDataKeys(int amount, int offset, Action<string> onSuccessCallback, Action onErrorCallback);
+        private static extern void StorageGetAllKeys(int amount, int offset, Action<string> onSuccessCallback, Action onErrorCallback);
         
         private static Action s_onGetUserDataErrorCallback;
         private static Action<string> s_onGetUserDataSuccessCallback;
@@ -44,20 +42,20 @@ namespace Agava.VKGames
         ///     ]
         /// }
         /// </returns>
-        public static void GetUserDataByKeys(string keysJson, Action<string> onSuccessCallback, Action onErrorCallback = null)
+        public static void GetCloudSaveData(string keysJson, Action<string> onSuccessCallback, Action onErrorCallback = null)
         {
             s_onGetUserDataErrorCallback = onErrorCallback;
             s_onGetUserDataSuccessCallback = onSuccessCallback;
 
-            GetUserData(keysJson, OnGetUserDataSuccessCallback, OnGetUserDataErrorCallback);
+            StorageGetCloudSaveData(keysJson, OnGetUserDataSuccessCallback, OnGetUserDataErrorCallback);
         }
 
-        public static void SetUserDataByKey(string key, string value, Action onSuccessCallback = null, Action onErrorCallback = null)
+        public static void SetCloudSaveData(string key, string value, Action onSuccessCallback = null, Action onErrorCallback = null)
         {
             s_onSetUserDataErrorCallback = onErrorCallback;
             s_onSetUserDataSuccessCallback = onSuccessCallback;
             
-            SetUserData(key, value, OnSetUserDataSuccessCallback, OnSetUserDataErrorCallback);
+            StorageSetCloudSaveData(key, value, OnSetUserDataSuccessCallback, OnSetUserDataErrorCallback);
         }
         
         /// <returns>
@@ -66,12 +64,12 @@ namespace Agava.VKGames
         ///     "keys": [ "key1", "key2", ..., "keyN" ]
         /// }
         /// </returns>
-        public static void GetAllUserDataKeys(int count, int offset, Action<string> onSuccessCallback, Action onErrorCallback = null)
+        public static void GetAllKeys(int count, int offset, Action<string> onSuccessCallback, Action onErrorCallback = null)
         {
             s_onGetAllUserDataKeysSuccessCallback = onSuccessCallback;
             s_onGetAllUserDataKeysErrorCallback = onErrorCallback;
             
-            GetAllDataKeys(count, offset, OnGetAllUserDataKeysSuccessCallback, OnGetAllUserDataKeysErrorCallback);
+            StorageGetAllKeys(count, offset, OnGetAllUserDataKeysSuccessCallback, OnGetAllUserDataKeysErrorCallback);
         }
 
         [MonoPInvokeCallback(typeof(Action))]

@@ -20,7 +20,7 @@ namespace VKGames.Tests
         {
             bool callbackInvoked = false;
 
-            Storage.GetUserDataByKeys(keys, null, onErrorCallback: () =>
+            Storage.GetCloudSaveData(keys, null, onErrorCallback: () =>
             {
                 callbackInvoked = true;
             });
@@ -35,7 +35,7 @@ namespace VKGames.Tests
         {
             bool callbackInvoked = false;
             
-            Storage.SetUserDataByKey(key, value, onErrorCallback: () =>
+            Storage.SetCloudSaveData(key, value, onErrorCallback: () =>
             {
                 callbackInvoked = true;
             });

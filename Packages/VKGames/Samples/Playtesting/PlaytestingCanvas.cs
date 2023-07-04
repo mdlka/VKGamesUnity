@@ -37,7 +37,7 @@ namespace Agava.VKGames.Samples.Playtesting
 
         public void InviteToCommunityButtonClick()
         {
-            Community.InviteToIJuniorGroup(onRewardedCallback: () => Debug.Log("Added to community"));
+            Community.InviteToGroup(onRewardedCallback: () => Debug.Log("Added to community"));
         }
 
         public void ShowLeaderboardButtonClick()
@@ -49,7 +49,7 @@ namespace Agava.VKGames.Samples.Playtesting
         {
             string keys = JsonUtility.ToJson(new StorageKeys { keys = new string[] { DataSaveKey } });
             
-            Storage.GetUserDataByKeys(keys, onSuccessCallback: value =>
+            Storage.GetCloudSaveData(keys, onSuccessCallback: value =>
             {
                 var save = JsonUtility.FromJson<StorageValues>(value).keys.ToDictionary(pair => pair.key, pair => pair.value);
                 _userDataInputField.text = save[DataSaveKey];
@@ -58,7 +58,7 @@ namespace Agava.VKGames.Samples.Playtesting
 
         public void OnSetUserDataButtonClick()
         {
-            Storage.SetUserDataByKey(DataSaveKey, _userDataInputField.text);
+            Storage.SetCloudSaveData(DataSaveKey, _userDataInputField.text);
         }
     }
 }

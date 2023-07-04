@@ -1,19 +1,19 @@
 const library = {
-    $vkSDK: {
+    $vkGames: {
         bridge: undefined,
 
         isInitialized: false,
 
         vkWebAppInit: function (onInitializedCallback, onErrorCallback, isTest) {
 
-            if (vkSDK.isInitialized) {
+            if (vkGames.isInitialized) {
                 return;
             }
 
             function setupVkBridge() {
                 function invokeSuccess() {
-                    vkSDK.isInitialized = true;
-                    vkSDK.bridge = window['vkBridge'];
+                    vkGames.isInitialized = true;
+                    vkGames.bridge = window['vkBridge'];
                     dynCall('v', onInitializedCallback);
                 }
 
@@ -61,13 +61,13 @@ const library = {
         },
 
         throwIfSdkNotInitialized: function () {
-            if (!vkSDK.isInitialized) {
+            if (!vkGames.isInitialized) {
                 throw new Error('SDK is not initialized. Invoke VKGamesSdk.Initialize() coroutine and wait for it to finish.');
             }
         },
 
-        vkWebSAppShowRewardedAd: function (onRewardedCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppShowNativeAds", { ad_format: "reward" })
+        vkWebAppShowRewardedAd: function (onRewardedCallback, onErrorCallback) {
+            vkGames.bridge.send("VKWebAppShowNativeAds", { ad_format: "reward" })
                 .then(function (data) {
                     if (data.result)
                         dynCall('v', onRewardedCallback);
@@ -79,7 +79,7 @@ const library = {
         },
 
         vkWebAppShowInterstitialAd: function (onOpenCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppShowNativeAds", { ad_format: "interstitial" })
+            vkGames.bridge.send("VKWebAppShowNativeAds", { ad_format: "interstitial" })
                 .then(function (data) {
                     if (data.result)
                         dynCall('v', onOpenCallback);
@@ -91,7 +91,7 @@ const library = {
         },
 
         vkWebAppShowLeaderboardBox: function (playerScore, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppShowLeaderBoardBox", { user_result: playerScore })
+            vkGames.bridge.send("VKWebAppShowLeaderBoardBox", { user_result: playerScore })
                 .then(function (data) {
                     console.log(data.success);
                 })
@@ -102,7 +102,7 @@ const library = {
         },
 
         vkWebAppShowInviteBox: function (onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppShowInviteBox", {})
+            vkGames.bridge.send("VKWebAppShowInviteBox", {})
                 .then(function (data) {
                     if (data.success)
                         dynCall('v', onSuccessCallback);
@@ -113,8 +113,8 @@ const library = {
                 });
         },
 
-        vkWebJoinGroup: function (onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppJoinGroup", { "group_id": 84861196 })
+        vkWebAppJoinGroup: function (groupId, onSuccessCallback, onErrorCallback) {
+            vkGames.bridge.send("VKWebAppJoinGroup", { "group_id": groupId })
                 .then(function (data) {
                     if (data.result)
                         dynCall('v', onSuccessCallback);
@@ -126,7 +126,7 @@ const library = {
         },
         
         vkWebAppShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send('VKWebAppShowOrderBox', { 
+            vkGames.bridge.send('VKWebAppShowOrderBox', { 
                     type: 'item', 
                     item: UTF8ToString(itemId)
                 })
@@ -140,16 +140,16 @@ const library = {
                 });
         },
 
-        getUserData: function (keysJsonArray, onSuccessCallback, onErrorCallback) {
+        vkWebAppGetCloudSaveData: function (keysJsonArray, onSuccessCallback, onErrorCallback) {
             const jsonArray = JSON.parse(keysJsonArray);
             console.log(jsonArray);
-            vkSDK.bridge.send("VKWebAppStorageGet", jsonArray)
+            vkGames.bridge.send("VKWebAppStorageGet", jsonArray)
                 .then(function (data) {
                     if(data.keys)
                     {
                         console.log(data);
                         const result = JSON.stringify(data);
-                        const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
+                        const bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(result);
                         dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
                         _free(bridgeDataUnmanagedStringPtr);
                     }
@@ -160,8 +160,8 @@ const library = {
                 });
         },
         
-        setUserData: function (key, value, onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppStorageSet", { "key": key.toString(), "value": value.toString() })
+        vkWebAppSetCloudSaveData: function (key, value, onSuccessCallback, onErrorCallback) {
+            vkGames.bridge.send("VKWebAppStorageSet", { "key": key.toString(), "value": value.toString() })
                 .then(function (data) {
                     if(data.result)
                         dynCall('v', onSuccessCallback);
@@ -172,13 +172,13 @@ const library = {
                 });
         },
 
-        getAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
-            vkSDK.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
+        vkWebAppStorageGetKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+            vkGames.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
                 .then(function (data) {
                     if(data.keys)
                     {
                         var serialized = JSON.stringify(data);
-                        var bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(serialized);
+                        var bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(serialized);
                         dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
                         _free(bridgeDataUnmanagedStringPtr);
                     }
@@ -201,72 +201,72 @@ const library = {
 
     WebAppInit: function (onInitializedCallback, onErrorCallback, isTest) {
         isTest = !!isTest;
-        vkSDK.vkWebAppInit(onInitializedCallback, onErrorCallback, isTest);
-    },
-
-    ShowRewardedAds: function (onRewardedCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.vkWebSAppShowRewardedAd(onRewardedCallback, onErrorCallback);
-    },
-
-    ShowInterstitialAds: function (onOpenCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.vkWebAppShowInterstitialAd(onOpenCallback, onErrorCallback);
-    },
-
-    ShowLeaderboardBox: function (playerScore, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.vkWebAppShowLeaderboardBox(playerScore, onErrorCallback);
-    },
-
-    ShowInviteBox: function (onSuccessCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.vkWebAppShowInviteBox(onSuccessCallback, onErrorCallback);
-    },
-
-    JoinIjuniorGroup: function (onSuccessCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-        
-        vkSDK.vkWebJoinGroup(onSuccessCallback, onErrorCallback);
-    },
-    
-    GetUserData: function (keysJsonArrayPtr, onSuccessCallback, onErrorCallback) {
-        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
-
-        vkSDK.throwIfSdkNotInitialized();
-        
-        vkSDK.getUserData(keysJsonArray, onSuccessCallback, onErrorCallback);
-    },
-    
-    SetUserData: function (keyStringPtr, valueStringPtr, onSuccessCallback, onErrorCallback) {
-        const key = UTF8ToString(keyStringPtr);
-        const value = UTF8ToString(valueStringPtr);
-        
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.setUserData(key, value, onSuccessCallback, onErrorCallback);
-    },
-
-    GetAllDataKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.getAllDataKeys(amount, offset, onSuccessCallback, onErrorCallback);
-    },
-
-    ShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
-        vkSDK.throwIfSdkNotInitialized();
-
-        vkSDK.vkWebAppShowOrderBox(itemId, onPaySuccessCallback, onErrorCallback);
+        vkGames.vkWebAppInit(onInitializedCallback, onErrorCallback, isTest);
     },
 
     IsInitialized: function () {
-        return vkSDK.isInitialized;
+        return vkGames.isInitialized;
+    },
+
+    ShowRewardedAds: function (onRewardedCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppShowRewardedAd(onRewardedCallback, onErrorCallback);
+    },
+
+    ShowInterstitialAds: function (onOpenCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppShowInterstitialAd(onOpenCallback, onErrorCallback);
+    },
+
+    ShowLeaderboardBox: function (playerScore, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppShowLeaderboardBox(playerScore, onErrorCallback);
+    },
+
+    ShowInviteBox: function (onSuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppShowInviteBox(onSuccessCallback, onErrorCallback);
+    },
+
+    JoinGroup: function (groupId, onSuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+        
+        vkGames.vkWebAppJoinGroup(groupId, onSuccessCallback, onErrorCallback);
+    },
+
+    ShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppShowOrderBox(itemId, onPaySuccessCallback, onErrorCallback);
+    },
+    
+    StorageGetCloudSaveData: function (keysJsonArrayPtr, onSuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
+        
+        vkGames.vkWebAppGetCloudSaveData(keysJsonArray, onSuccessCallback, onErrorCallback);
+    },
+    
+    StorageSetCloudSaveData: function (keyStringPtr, valueStringPtr, onSuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        const key = UTF8ToString(keyStringPtr);
+        const value = UTF8ToString(valueStringPtr);
+
+        vkGames.vkWebAppSetCloudSaveData(key, value, onSuccessCallback, onErrorCallback);
+    },
+
+    StorageGetAllKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+        vkGames.throwIfSdkNotInitialized();
+
+        vkGames.vkWebAppStorageGetKeys(amount, offset, onSuccessCallback, onErrorCallback);
     }
 }
 
-autoAddDeps(library, '$vkSDK');
+autoAddDeps(library, '$vkGames');
 mergeInto(LibraryManager.library, library);

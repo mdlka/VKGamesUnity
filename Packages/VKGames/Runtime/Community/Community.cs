@@ -7,17 +7,17 @@ namespace Agava.VKGames
     public static class Community
     {
         [DllImport("__Internal")]
-        private static extern void JoinIjuniorGroup(Action onSuccessCallback, Action onErrorCallback);
+        private static extern void JoinGroup(long groupId, Action onSuccessCallback, Action onErrorCallback);
 
         private static Action s_onRewardedCallback;
         private static Action s_onErrorCallback;
 
-        public static void InviteToIJuniorGroup(Action onRewardedCallback = null, Action onErrorCallback = null)
+        public static void InviteToGroup(long groupId = 84861196, Action onRewardedCallback = null, Action onErrorCallback = null)
         {
             s_onRewardedCallback = onRewardedCallback;
             s_onErrorCallback = onErrorCallback;
 
-            JoinIjuniorGroup(OnSuccessCallback, OnErrorCallback);
+            JoinGroup(groupId, OnSuccessCallback, OnErrorCallback);
         }
 
         [MonoPInvokeCallback(typeof(Action))]
