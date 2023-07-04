@@ -4,7 +4,7 @@ const library = {
 
         isInitialized: false,
 
-        vkWebAppInit: function (onInitializedCallback, onErrorCallback, isTest) {
+        vkWebAppInit: function (successCallbackPtr, errorCallbackPtr, isTest) {
 
             if (vkGames.isInitialized) {
                 return;
@@ -14,11 +14,11 @@ const library = {
                 function invokeSuccess() {
                     vkGames.isInitialized = true;
                     vkGames.bridge = window['vkBridge'];
-                    dynCall('v', onInitializedCallback);
+                    dynCall('v', successCallbackPtr);
                 }
 
                 function invokeFailure(error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.error(error);
                 }
 
@@ -66,81 +66,81 @@ const library = {
             }
         },
 
-        vkWebAppShowRewardedAd: function (onRewardedCallback, onErrorCallback) {
+        vkWebAppShowRewardedAd: function (rewardedCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppShowNativeAds", { ad_format: "reward" })
                 .then(function (data) {
                     if (data.result)
-                        dynCall('v', onRewardedCallback);
+                        dynCall('v', rewardedCallbackPtr);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppShowInterstitialAd: function (onOpenCallback, onErrorCallback) {
+        vkWebAppShowInterstitialAd: function (openCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppShowNativeAds", { ad_format: "interstitial" })
                 .then(function (data) {
                     if (data.result)
-                        dynCall('v', onOpenCallback);
+                        dynCall('v', openCallbackPtr);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppShowLeaderboardBox: function (playerScore, onErrorCallback) {
+        vkWebAppShowLeaderboardBox: function (playerScore, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppShowLeaderBoardBox", { user_result: playerScore })
                 .then(function (data) {
                     console.log(data.success);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppShowInviteBox: function (onSuccessCallback, onErrorCallback) {
+        vkWebAppShowInviteBox: function (successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppShowInviteBox", {})
                 .then(function (data) {
                     if (data.success)
-                        dynCall('v', onSuccessCallback);
+                        dynCall('v', successCallbackPtr);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppJoinGroup: function (groupId, onSuccessCallback, onErrorCallback) {
+        vkWebAppJoinGroup: function (groupId, successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppJoinGroup", { "group_id": groupId })
                 .then(function (data) {
                     if (data.result)
-                        dynCall('v', onSuccessCallback);
+                        dynCall('v', successCallbackPtr);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
         
-        vkWebAppShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
+        vkWebAppShowOrderBox: function (itemId, successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send('VKWebAppShowOrderBox', { 
                     type: 'item', 
-                    item: UTF8ToString(itemId)
+                    item: itemId
                 })
                 .then((data) => {
                     if (data.success) {
-                        dynCall('v', onPaySuccessCallback);
+                        dynCall('v', successCallbackPtr);
                 }})
                 .catch((error) => {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppGetCloudSaveData: function (keysJsonArray, onSuccessCallback, onErrorCallback) {
+        vkWebAppGetCloudSaveData: function (keysJsonArray, successCallbackPtr, errorCallbackPtr) {
             const jsonArray = JSON.parse(keysJsonArray);
             console.log(jsonArray);
             vkGames.bridge.send("VKWebAppStorageGet", jsonArray)
@@ -150,41 +150,41 @@ const library = {
                         console.log(data);
                         const result = JSON.stringify(data);
                         const bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(result);
-                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                        dynCall('vi', successCallbackPtr, [bridgeDataUnmanagedStringPtr]);
                         _free(bridgeDataUnmanagedStringPtr);
                     }
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
         
-        vkWebAppSetCloudSaveData: function (key, value, onSuccessCallback, onErrorCallback) {
-            vkGames.bridge.send("VKWebAppStorageSet", { "key": key.toString(), "value": value.toString() })
+        vkWebAppSetCloudSaveData: function (key, value, successCallbackPtr, errorCallbackPtr) {
+            vkGames.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
                 .then(function (data) {
                     if(data.result)
-                        dynCall('v', onSuccessCallback);
+                        dynCall('v', successCallbackPtr);
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
 
-        vkWebAppStorageGetKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+        vkWebAppStorageGetKeys: function (amount, offset, successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
                 .then(function (data) {
                     if(data.keys)
                     {
                         var serialized = JSON.stringify(data);
                         var bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(serialized);
-                        dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
+                        dynCall('vi', successCallbackPtr, [bridgeDataUnmanagedStringPtr]);
                         _free(bridgeDataUnmanagedStringPtr);
                     }
                 })
                 .catch(function (error) {
-                    dynCall('v', onErrorCallback);
+                    dynCall('v', errorCallbackPtr);
                     console.log(error);
                 });
         },
@@ -199,72 +199,74 @@ const library = {
 
     // C# calls
 
-    WebAppInit: function (onInitializedCallback, onErrorCallback, isTest) {
+    WebAppInit: function (successCallbackPtr, errorCallbackPtr, isTest) {
         isTest = !!isTest;
-        vkGames.vkWebAppInit(onInitializedCallback, onErrorCallback, isTest);
+        vkGames.vkWebAppInit(successCallbackPtr, errorCallbackPtr, isTest);
     },
 
     IsInitialized: function () {
         return vkGames.isInitialized;
     },
 
-    ShowRewardedAds: function (onRewardedCallback, onErrorCallback) {
+    ShowRewardedAds: function (rewardedCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppShowRewardedAd(onRewardedCallback, onErrorCallback);
+        vkGames.vkWebAppShowRewardedAd(rewardedCallbackPtr, errorCallbackPtr);
     },
 
-    ShowInterstitialAds: function (onOpenCallback, onErrorCallback) {
+    ShowInterstitialAds: function (openCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppShowInterstitialAd(onOpenCallback, onErrorCallback);
+        vkGames.vkWebAppShowInterstitialAd(openCallbackPtr, errorCallbackPtr);
     },
 
-    ShowLeaderboardBox: function (playerScore, onErrorCallback) {
+    ShowLeaderboardBox: function (playerScore, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppShowLeaderboardBox(playerScore, onErrorCallback);
+        vkGames.vkWebAppShowLeaderboardBox(playerScore, errorCallbackPtr);
     },
 
-    ShowInviteBox: function (onSuccessCallback, onErrorCallback) {
+    ShowInviteBox: function (successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppShowInviteBox(onSuccessCallback, onErrorCallback);
+        vkGames.vkWebAppShowInviteBox(successCallbackPtr, errorCallbackPtr);
     },
 
-    JoinGroup: function (groupId, onSuccessCallback, onErrorCallback) {
+    JoinGroup: function (groupId, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
         
-        vkGames.vkWebAppJoinGroup(groupId, onSuccessCallback, onErrorCallback);
+        vkGames.vkWebAppJoinGroup(groupId, successCallbackPtr, errorCallbackPtr);
     },
 
-    ShowOrderBox: function (itemId, onPaySuccessCallback, onErrorCallback) {
+    ShowOrderBox: function (itemIdPtr, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppShowOrderBox(itemId, onPaySuccessCallback, onErrorCallback);
+        const itemId = UTF8ToString(itemIdPtr);
+
+        vkGames.vkWebAppShowOrderBox(itemId, successCallbackPtr, errorCallbackPtr);
     },
     
-    StorageGetCloudSaveData: function (keysJsonArrayPtr, onSuccessCallback, onErrorCallback) {
+    StorageGetCloudSaveData: function (keysJsonArrayPtr, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
         const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
         
-        vkGames.vkWebAppGetCloudSaveData(keysJsonArray, onSuccessCallback, onErrorCallback);
+        vkGames.vkWebAppGetCloudSaveData(keysJsonArray, successCallbackPtr, errorCallbackPtr);
     },
     
-    StorageSetCloudSaveData: function (keyStringPtr, valueStringPtr, onSuccessCallback, onErrorCallback) {
+    StorageSetCloudSaveData: function (keyStringPtr, valueStringPtr, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
         const key = UTF8ToString(keyStringPtr);
         const value = UTF8ToString(valueStringPtr);
 
-        vkGames.vkWebAppSetCloudSaveData(key, value, onSuccessCallback, onErrorCallback);
+        vkGames.vkWebAppSetCloudSaveData(key, value, successCallbackPtr, errorCallbackPtr);
     },
 
-    StorageGetAllKeys: function (amount, offset, onSuccessCallback, onErrorCallback) {
+    StorageGetAllKeys: function (amount, offset, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
-        vkGames.vkWebAppStorageGetKeys(amount, offset, onSuccessCallback, onErrorCallback);
+        vkGames.vkWebAppStorageGetKeys(amount, offset, successCallbackPtr, errorCallbackPtr);
     }
 }
 
