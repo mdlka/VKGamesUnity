@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
-using System.Linq;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Agava.VKGames.Samples.Playtesting
 {
@@ -16,7 +15,6 @@ namespace Agava.VKGames.Samples.Playtesting
 #if !UNITY_WEBGL || UNITY_EDITOR
             yield break;
 #endif
-
             yield return VKGamesSdk.Initialize(onSuccessCallback: () => Debug.Log($"Initialized: {VKGamesSdk.Initialized}"));
         }
 
@@ -47,13 +45,7 @@ namespace Agava.VKGames.Samples.Playtesting
 
         public void OnGetUserDataButtonClick()
         {
-            string keys = JsonUtility.ToJson(new StorageKeys { keys = new string[] { DataSaveKey } });
-            
-            Storage.GetCloudSaveData(keys, onSuccessCallback: value =>
-            {
-                var save = JsonUtility.FromJson<StorageValues>(value).keys.ToDictionary(pair => pair.key, pair => pair.value);
-                _userDataInputField.text = save[DataSaveKey];
-            });
+            Storage.GetCloudSaveData(DataSaveKey, onSuccessCallback: value => _userDataInputField.text = value);
         }
 
         public void OnSetUserDataButtonClick()

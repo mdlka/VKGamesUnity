@@ -126,10 +126,7 @@ const library = {
         },
         
         vkWebAppShowOrderBox: function (itemId, successCallbackPtr, errorCallbackPtr) {
-            vkGames.bridge.send('VKWebAppShowOrderBox', { 
-                    type: 'item', 
-                    item: itemId
-                })
+            vkGames.bridge.send('VKWebAppShowOrderBox', { type: 'item', item: itemId})
                 .then((data) => {
                     if (data.success) {
                         dynCall('v', successCallbackPtr);
@@ -140,26 +137,6 @@ const library = {
                 });
         },
 
-        vkWebAppGetCloudSaveData: function (keysJsonArray, successCallbackPtr, errorCallbackPtr) {
-            const jsonArray = JSON.parse(keysJsonArray);
-            console.log(jsonArray);
-            vkGames.bridge.send("VKWebAppStorageGet", jsonArray)
-                .then(function (data) {
-                    if(data.keys)
-                    {
-                        console.log(data);
-                        const result = JSON.stringify(data);
-                        const bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(result);
-                        dynCall('vi', successCallbackPtr, [bridgeDataUnmanagedStringPtr]);
-                        _free(bridgeDataUnmanagedStringPtr);
-                    }
-                })
-                .catch(function (error) {
-                    dynCall('v', errorCallbackPtr);
-                    console.log(error);
-                });
-        },
-        
         vkWebAppSetCloudSaveData: function (key, value, successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppStorageSet", { "key": key, "value": value })
                 .then(function (data) {
@@ -172,11 +149,27 @@ const library = {
                 });
         },
 
+        vkWebAppGetCloudSaveData: function (keysJsonArray, successCallbackPtr, errorCallbackPtr) {
+            const jsonArray = JSON.parse(keysJsonArray);
+            vkGames.bridge.send("VKWebAppStorageGet", jsonArray)
+                .then(function (data) {
+                    if(data.keys) {
+                        const result = JSON.stringify(data);
+                        const bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(result);
+                        dynCall('vi', successCallbackPtr, [bridgeDataUnmanagedStringPtr]);
+                        _free(bridgeDataUnmanagedStringPtr);
+                    }
+                })
+                .catch(function (error) {
+                    dynCall('v', errorCallbackPtr);
+                    console.log(error);
+                });
+        },
+
         vkWebAppStorageGetKeys: function (amount, offset, successCallbackPtr, errorCallbackPtr) {
             vkGames.bridge.send("VKWebAppStorageGetKeys", { "count": amount, "offset": offset })
                 .then(function (data) {
-                    if(data.keys)
-                    {
+                    if(data.keys) {
                         var serialized = JSON.stringify(data);
                         var bridgeDataUnmanagedStringPtr = vkGames.allocateUnmanagedString(serialized);
                         dynCall('vi', successCallbackPtr, [bridgeDataUnmanagedStringPtr]);
@@ -245,15 +238,7 @@ const library = {
 
         vkGames.vkWebAppShowOrderBox(itemId, successCallbackPtr, errorCallbackPtr);
     },
-    
-    StorageGetCloudSaveData: function (keysJsonArrayPtr, successCallbackPtr, errorCallbackPtr) {
-        vkGames.throwIfSdkNotInitialized();
 
-        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
-        
-        vkGames.vkWebAppGetCloudSaveData(keysJsonArray, successCallbackPtr, errorCallbackPtr);
-    },
-    
     StorageSetCloudSaveData: function (keyStringPtr, valueStringPtr, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
@@ -262,8 +247,16 @@ const library = {
 
         vkGames.vkWebAppSetCloudSaveData(key, value, successCallbackPtr, errorCallbackPtr);
     },
+    
+    StorageGetCloudSaveData: function (keysJsonArrayPtr, successCallbackPtr, errorCallbackPtr) {
+        vkGames.throwIfSdkNotInitialized();
 
-    StorageGetAllKeys: function (amount, offset, successCallbackPtr, errorCallbackPtr) {
+        const keysJsonArray = UTF8ToString(keysJsonArrayPtr);
+        
+        vkGames.vkWebAppGetCloudSaveData(keysJsonArray, successCallbackPtr, errorCallbackPtr);
+    },
+
+    StorageGetKeys: function (amount, offset, successCallbackPtr, errorCallbackPtr) {
         vkGames.throwIfSdkNotInitialized();
 
         vkGames.vkWebAppStorageGetKeys(amount, offset, successCallbackPtr, errorCallbackPtr);

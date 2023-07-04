@@ -1,20 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using AOT;
-using UnityEngine.Scripting;
+using UnityEngine;
 
 namespace Agava.VKGames
 {
     public static class Storage
     {
-        private static Action s_onSetCloudSaveDataErrorCallback;
         private static Action s_onSetCloudSaveDataSuccessCallback;
-        
-        private static Action s_onGetCloudSaveDataErrorCallback;
-        private static Action<string> s_onGetCloudSaveDataSuccessCallback;
+        private static Action s_onSetCloudSaveDataErrorCallback;
 
-        private static Action<string> s_onGetAllKeysSuccessCallback;
-        private static Action s_onGetAllKeysErrorCallback;
+        private static Action<string> s_onGetCloudSaveDataSuccessCallback;
+        private static Action s_onGetCloudSaveDataErrorCallback;
+
+        private static Action s_onGetDictionaryCloudSaveDataErrorCallback;
+        private static Action<IReadOnlyDictionary<string, string>> s_onGetDictionaryCloudSaveDataSuccessCallback;
+
+        private static Action<string[]> s_onGetKeysSuccessCallback;
+        private static Action s_onGetKeysErrorCallback;
         
         public static void SetCloudSaveData(string key, string value, Action onSuccessCallback = null, Action onErrorCallback = null)
         {
@@ -39,29 +44,24 @@ namespace Agava.VKGames
             s_onSetCloudSaveDataErrorCallback?.Invoke();
         }
         
-        ///<param name="keysJson">
-        /// Expects json string in format:
-        /// {
-        ///     "keys": [ "key1", "key2", ..., "keyN" ]
-        /// }
-        /// </param>
-        /// <returns>
-        /// Passes results to callback in json array string in order defined in keysJson parameter with format:
-        /// {
-        ///     "keys": [
-        ///         {"key": "key1", "value": "value1"},
-        ///         {"key": "key2", "value": "value2"},
-        ///         ... ,
-        ///         {"key": "keyN", "value": "valueN"}
-        ///     ]
-        /// }
-        /// </returns>
-        public static void GetCloudSaveData(string keysJson, Action<string> onSuccessCallback, Action onErrorCallback = null)
+        public static void GetCloudSaveData(string key, Action<string> onSuccessCallback, Action onErrorCallback = null)
         {
             s_onGetCloudSaveDataSuccessCallback = onSuccessCallback;
             s_onGetCloudSaveDataErrorCallback = onErrorCallback;
+            
+            string jsonKey = JsonUtility.ToJson(new StorageKeys { keys = new[] { key } });
 
-            StorageGetCloudSaveData(keysJson, OnGetCloudSaveDataSuccessCallback, OnGetCloudSaveDataErrorCallback);
+            StorageGetCloudSaveData(jsonKey, OnGetCloudSaveDataSuccessCallback, OnGetCloudSaveDataErrorCallback);
+        }
+
+        public static void GetDictionaryCloudSaveData(string[] keys, Action<IReadOnlyDictionary<string, string>> onSuccessCallback, Action onErrorCallback = null)
+        {
+            s_onGetDictionaryCloudSaveDataSuccessCallback = onSuccessCallback;
+            s_onGetDictionaryCloudSaveDataErrorCallback = onErrorCallback;
+            
+            string jsonKeys = JsonUtility.ToJson(new StorageKeys { keys = keys} );
+            
+            StorageGetCloudSaveData(jsonKeys, OnGetDictionaryCloudSaveDataSuccessCallback, OnGetDictionaryCloudSaveDataErrorCallback);
         }
         
         [DllImport("__Internal")]
@@ -70,7 +70,9 @@ namespace Agava.VKGames
         [MonoPInvokeCallback(typeof(Action<string>))]
         private static void OnGetCloudSaveDataSuccessCallback(string value)
         {
-            s_onGetCloudSaveDataSuccessCallback?.Invoke(value);
+            string cloudSaveData = JsonUtility.FromJson<StorageValues>(value).keys[0].value;
+            
+            s_onGetCloudSaveDataSuccessCallback?.Invoke(cloudSaveData);
         }
         
         [MonoPInvokeCallback(typeof(Action))]
@@ -78,51 +80,45 @@ namespace Agava.VKGames
         {
             s_onGetCloudSaveDataErrorCallback?.Invoke();
         }
-
-        /// <returns>
-        /// Passes results to callback as json array with format:
-        /// {
-        ///     "keys": [ "key1", "key2", ..., "keyN" ]
-        /// }
-        /// </returns>
-        public static void GetAllKeys(int count, int offset, Action<string> onSuccessCallback, Action onErrorCallback = null)
+        
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void OnGetDictionaryCloudSaveDataSuccessCallback(string value)
         {
-            s_onGetAllKeysSuccessCallback = onSuccessCallback;
-            s_onGetAllKeysErrorCallback = onErrorCallback;
+            Dictionary<string, string> cloudSaveData = JsonUtility.FromJson<StorageValues>(value).keys
+                .ToDictionary(pair => pair.key, pair => pair.value);
             
-            StorageGetAllKeys(count, offset, OnGetAllKeysSuccessCallback, OnGetAllKeysErrorCallback);
+            s_onGetDictionaryCloudSaveDataSuccessCallback?.Invoke(cloudSaveData);
+        }
+        
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnGetDictionaryCloudSaveDataErrorCallback()
+        {
+            s_onGetDictionaryCloudSaveDataErrorCallback?.Invoke();
+        }
+        
+        public static void GetKeys(int count, int offset, Action<string[]> onSuccessCallback, Action onErrorCallback = null)
+        {
+            s_onGetKeysSuccessCallback = onSuccessCallback;
+            s_onGetKeysErrorCallback = onErrorCallback;
+            
+            StorageGetKeys(count, offset, OnGetKeysSuccessCallback, OnGetKeysErrorCallback);
         }
         
         [DllImport("__Internal")]
-        private static extern void StorageGetAllKeys(int amount, int offset, Action<string> successCallback, Action errorCallback);
+        private static extern void StorageGetKeys(int amount, int offset, Action<string> successCallback, Action errorCallback);
 
         [MonoPInvokeCallback(typeof(Action))]
-        private static void OnGetAllKeysErrorCallback()
+        private static void OnGetKeysErrorCallback()
         {
-            s_onGetAllKeysErrorCallback?.Invoke();
+            s_onGetKeysErrorCallback?.Invoke();
         }
         
         [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnGetAllKeysSuccessCallback(string jsonArray)
+        private static void OnGetKeysSuccessCallback(string jsonKeys)
         {
-            s_onGetAllKeysSuccessCallback?.Invoke(jsonArray);
+            string[] keys = JsonUtility.FromJson<StorageKeys>(jsonKeys).keys;
+            
+            s_onGetKeysSuccessCallback?.Invoke(keys);
         }
-    }
-
-    public class StorageKeys
-    {
-        [field: Preserve] public string[] keys;
-    }
-
-    public class StorageValues
-    {
-        [field: Preserve] public StringKeyValuePair[] keys;
-    }
-
-    [Serializable]
-    public class StringKeyValuePair
-    {
-        public string key;
-        public string value;
     }
 }
