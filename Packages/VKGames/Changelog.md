@@ -7,7 +7,7 @@
 - `groupId` param to `Community.InviteToGroup`.  
   
 ### Changed  
-- `Community.InviteToIJuniorGroup` are renamed to `Community.InviteToGroup`.  
+- `Community.InviteToIJuniorGroup` is renamed to `Community.InviteToGroup`.  
 - Renamed some params.  
   
 ## [1.2.0] - 27.06.2023  
