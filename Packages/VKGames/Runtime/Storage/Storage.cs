@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using AOT;
-using UnityEngine.Device;
+using UnityEngine.Scripting;
 
 namespace Agava.VKGames
 {
@@ -18,8 +20,10 @@ namespace Agava.VKGames
         
         private static Action s_onGetUserDataErrorCallback;
         private static Action<string> s_onGetUserDataSuccessCallback;
+        
         private static Action s_onSetUserDataErrorCallback;
         private static Action s_onSetUserDataSuccessCallback;
+        
         private static Action<string> s_onGetAllUserDataKeysSuccessCallback;
         private static Action s_onGetAllUserDataKeysErrorCallback;
 
@@ -105,5 +109,22 @@ namespace Agava.VKGames
         {
             s_onGetAllUserDataKeysSuccessCallback?.Invoke(jsonArray);
         }
+    }
+
+    public class StorageKeys
+    {
+        [field: Preserve] public string[] keys;
+    }
+
+    public class StorageValues
+    {
+        [field: Preserve] public StringKeyValuePair[] keys;
+    }
+
+    [Serializable]
+    public class StringKeyValuePair
+    {
+        public string key;
+        public string value;
     }
 }

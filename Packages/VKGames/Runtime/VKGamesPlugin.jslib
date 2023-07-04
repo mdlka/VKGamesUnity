@@ -147,6 +147,7 @@ const library = {
                 .then(function (data) {
                     if(data.keys)
                     {
+                        console.log(data);
                         const result = JSON.stringify(data);
                         const bridgeDataUnmanagedStringPtr = vkSDK.allocateUnmanagedString(result);
                         dynCall('vi', onSuccessCallback, [bridgeDataUnmanagedStringPtr]);
