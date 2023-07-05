@@ -1,5 +1,10 @@
 # Changelog  
   
+## [2.0.1] - 05.07.2023  
+  
+### Fixed  
+- Now json string formatting in sample doesn't remove spaces.  
+  
 ## [2.0.0] - 04.07.2023  
   
 ### Added  
